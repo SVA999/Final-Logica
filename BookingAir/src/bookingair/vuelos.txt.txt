@@ -1,0 +1,8 @@
+ruta,valor,asiento,numero de tiquete
+Medellín-Bogotá-Medellín,400000,
+Medellín-Bogotá,150000,
+Bogotá-Medellín,290000,
+Medellín-SanAndrés-Medellín,380000,
+Medellín-SanAndrés,220000,
+SanAndrés-Medellín,450000,
+SanAndrés-Medellín-SanAndrés,
