@@ -139,7 +139,7 @@ public class PanelTrayecto1 extends javax.swing.JPanel {
         fechaIda = jdcFechaIda.getDate();
         fechaVuelta = jdcFechaVuelta.getDate();
 
-        if (fechaVuelta != null &&  fechaIda != null) {
+        if (fechaVuelta != null &&  fechaIda != null && (CB_Origen.getItemAt(0).equals("Seleccionar") && CB_Destino.getItemAt(0).e)) {
 
             LocalDate fechaIdaLD = fechaIda.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate fechaVueltaLD = fechaVuelta.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
