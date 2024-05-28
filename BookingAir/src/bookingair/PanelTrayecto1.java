@@ -139,8 +139,9 @@ public class PanelTrayecto1 extends javax.swing.JPanel {
         fechaIda = jdcFechaIda.getDate();
         fechaVuelta = jdcFechaVuelta.getDate();
 
-        if (fechaVuelta != null &&  fechaIda != null && (CB_Origen.getItemAt(0).equals("Seleccionar") && CB_Destino.getItemAt(0).e)) {
+        if (fechaVuelta != null &&  fechaIda != null) {
 
+            if (!(CB_Destino.getItemAt(0).equals("Selecciona origen")) && !(CB_Origen.getItemAt(0).equals("Seleccionar"))) {
             LocalDate fechaIdaLD = fechaIda.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate fechaVueltaLD = fechaVuelta.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -157,6 +158,10 @@ public class PanelTrayecto1 extends javax.swing.JPanel {
                 
             }else{
                 JOptionPane.showMessageDialog(null, "La fecha de regreso debe ser despues de la de salida");
+            }
+            
+            }else {
+            JOptionPane.showMessageDialog(null, "Seleccione su origen y destino");
             }
             
         }else {
