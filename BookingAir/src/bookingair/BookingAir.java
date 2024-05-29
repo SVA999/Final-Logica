@@ -2,24 +2,33 @@ package bookingair;
 
 import java.awt.event.*;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.*;
+import java.io.*;
 
 public class BookingAir {
     
     //Abrir el Formulario
     static f_Reservas form_Reservas = new f_Reservas();
-    static String[] datosVuelo; 
     
     //Objetos Formulario
-    static JButton b_enviarDatos1,b_enviarDatos2;
-    static JLabel l_PrecioVuelo1;
+    //static JButton b_enviarDatos1,b_enviarDatos2, b_imprimirT,b_VaciarDatos;
+    
+    
+    //Archivos
+        //Lectura
+    public static FileReader file_vuelos;
+    public static BufferedReader dato_vuelos;
+        //Escritura
+    public static FileWriter fileW_Vuelos;
+    public static PrintWriter printer_Ticket;
     
     //Datos
+        //Del Formulario
+    static String[] datosVuelo; 
+
+        //Otros
     static String valorVuelo="";
+    static int numeroTicket=0;
     
     
     //HashMap Vuelos
@@ -36,11 +45,21 @@ public class BookingAir {
             form_Reservas.setVisible(true);
             
             //Definir Objetos Formulario
-            b_enviarDatos1 = form_Reservas.b_enviarDatos1;
+            /*b_enviarDatos1 = form_Reservas.b_enviarDatos1;
             b_enviarDatos2 = form_Reservas.b_enviarDatos2;
+            b_imprimirT = form_Reservas.b_imprimirT;
+            b_VaciarDatos = form_Reservas.b_VaciarDatos;*/
             
+            //Definir arcivos
+                //Lectura
+            //file_vuelos = new FileReader("E:\\Santiago\\Programacion\\UPB\\Proyectos\\Final-Logica\\BookingAir\\src\\bookingair\\files\\vuelos.txt");
+            //dato_vuelos= new BufferedReader(file_vuelos);
+                //Escritura
             
-            b_enviarDatos1.addActionListener(new ActionListener() {
+                
+        //Listeners de botones del formulario
+                //Boton Reservar en Solo ida
+            form_Reservas.b_enviarDatos1.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -52,8 +71,8 @@ public class BookingAir {
                     }
                 }
             });
-            
-            b_enviarDatos2.addActionListener(new ActionListener() {
+                //Boton Reservar en Ida y Vuelta
+            form_Reservas.b_enviarDatos2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -65,6 +84,31 @@ public class BookingAir {
                     }
                 }
             });
+                //Boton Imprimir Tiquete en pestaña Vuelos
+            form_Reservas.b_imprimirT.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        PrintTicket();
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null,"Error:" + e);
+                    }
+                }
+            });
+                //Boton Borrar datos pasados
+            form_Reservas.b_VaciarDatos.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        VaciarCarpeta();
+                        numeroTicket=0;
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null,"Error:" + e);
+                    }
+                }
+            });
+            
+            
             
             
         } catch (Exception e) {
@@ -73,12 +117,7 @@ public class BookingAir {
     }
     
     //Funciones
-    
-    public String SendValor(){
-        return valorVuelo;
-    }
-    
-    
+
     public static void printVectorDatos(String[] vector) {
         for (int i = 0; i < datosVuelo.length; i++) {
             System.out.print("Dato"+ i+": "+datosVuelo[i]+"\t");
@@ -88,6 +127,9 @@ public class BookingAir {
     
     public static void CalcularPrecio() throws Exception {
         try {
+            economica.clear();
+            ejecutiva.clear();
+            
             economica.put("Medellín-Bogotá", "$225.000");
             economica.put("Bogotá-Medellín", "$225.000");
             economica.put("Medellín", "$150.000");
@@ -127,6 +169,76 @@ public class BookingAir {
             throw new Exception(e);
         }
     }
+
+    //Funciones para Imprimir el tiquete
+    public static void VaciarCarpeta() throws Exception{
+        try {
+            File folder = new File("E:/Santiago/Programacion/UPB/Proyectos/Final-Logica/BookingAir/src/bookingair/files/Tickets"); // Reemplaza con la ruta de tu carpeta
+            File[] listOfFiles = folder.listFiles();
+
+            if (listOfFiles != null) {
+                for (File file : listOfFiles) {
+                    if (file.isFile() && file.getName().endsWith(".txt")) {
+                        boolean result = file.delete();
+                        if (result) {
+                            System.out.println("Archivo eliminado: " + file.getName());
+                        } else {
+                            System.out.println("No se pudo eliminar el archivo: " + file.getName());
+                        }
+                    }
+                }
+            } else {
+                System.out.println("No se encontraron archivos en la carpeta.");
+            }
+        } catch (Exception e) {
+            throw new Exception("Error al vaciar carpeta " + e);
+        }
+    }
+
+
+
+    public static String EnumerarTicket() throws Exception{
+        try {
+            String numeroTicketS="";
+            numeroTicket+=1;
+            numeroTicketS=""+numeroTicket;
+            return numeroTicketS;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error al Imprimir el ticket: "+e);
+            throw new Exception(e);
+        }
+    }
     
+    public static void PrintTicket() throws Exception {
+        try {
+            String numTicket=EnumerarTicket();
+            fileW_Vuelos = new FileWriter("E:/Santiago/Programacion/UPB/Proyectos/Final-Logica/BookingAir/src/bookingair/files/Tickets/ticket"+numTicket+".txt");
+            printer_Ticket = new PrintWriter(fileW_Vuelos);
+
+            //Contenido del Ticket
+            printer_Ticket.println("Ticket #"+numeroTicket +" |");
+            printer_Ticket.println("Código de vuelo "+vuelos.keySet());
+            printer_Ticket.println("Silla #"+"NUMERO DE SILLA");
+            
+
+            printer_Ticket.println("Clase: "+datosVuelo[3]);
+            printer_Ticket.println("Valor: "+valorVuelo);
+            
+            /*l_datoIdaV.setText("Ida: "+datosVueloForm[0]);
+            l_datoVueltaV.setText("Vuelta: "+datosVueloForm[1]);
+            l_TrayectoV.setText("Trayecto - Solo ida");
+            l_datoTrayectoV.setText(datosVueloForm[2]+ " destino " + CB_Destino1.getSelectedItem().toString());
+            l_datoClaseV.setText(datosVueloForm[3]);
+            l_datoHoraV.setText(datosVueloForm[4]);*/
+            
+            
+
+            fileW_Vuelos.close();
+            printer_Ticket.close();
+            System.out.println("Se ha impreso correctamente ticket"+numTicket+".txt");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ha ocurrido un error al Imprimir el ticket: "+e);
+        }
+    }
     
 }
