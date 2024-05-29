@@ -147,15 +147,15 @@ public class f_Reservas extends javax.swing.JFrame {
         l_Precio.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         l_Precio.setText("Valor del vuelo");
         l_Precio.setToolTipText("");
-        l_PrecioText.add(l_Precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 120, -1));
+        l_PrecioText.add(l_Precio, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 140, 20));
 
         l_PrecioVuelo1.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
         l_PrecioVuelo1.setForeground(new java.awt.Color(182, 206, 181));
         l_PrecioVuelo1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        l_PrecioVuelo1.setText("$###.###");
-        l_PrecioText.add(l_PrecioVuelo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 120, -1));
+        l_PrecioVuelo1.setText("$ ------");
+        l_PrecioText.add(l_PrecioVuelo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 140, 20));
 
-        info.add(l_PrecioText, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, -1, 90));
+        info.add(l_PrecioText, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 140, 70));
 
         backG.add(info, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 200, 570));
 
@@ -179,6 +179,7 @@ public class f_Reservas extends javax.swing.JFrame {
         TabsTrayecto.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
         TabsTrayecto.setFocusable(false);
         TabsTrayecto.setFont(new java.awt.Font("Dubai", 1, 12)); // NOI18N
+        TabsTrayecto.setVerifyInputWhenFocusTarget(false);
         TabsTrayecto.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 TabsTrayectoStateChanged(evt);
@@ -242,7 +243,7 @@ public class f_Reservas extends javax.swing.JFrame {
         l_Destino2.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_Destino2.setForeground(new java.awt.Color(52, 78, 65));
         l_Destino2.setText("Destino");
-        DosTrayectos.add(l_Destino2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 100, 180, 20));
+        DosTrayectos.add(l_Destino2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 90, 180, 20));
 
         CB_Destino2.setFont(new java.awt.Font("Dubai", 1, 12)); // NOI18N
         CB_Destino2.setForeground(new java.awt.Color(153, 153, 153));
@@ -252,7 +253,7 @@ public class f_Reservas extends javax.swing.JFrame {
                 CB_Destino2ActionPerformed(evt);
             }
         });
-        DosTrayectos.add(CB_Destino2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 120, 220, 30));
+        DosTrayectos.add(CB_Destino2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, 220, 30));
 
         l_Clase1.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_Clase1.setForeground(new java.awt.Color(52, 78, 65));
@@ -305,6 +306,7 @@ public class f_Reservas extends javax.swing.JFrame {
         TabsTrayecto.addTab("Ida y vuela", DosTrayectos);
 
         TabSection.setBackground(new java.awt.Color(218, 215, 205));
+        TabSection.setFocusable(false);
         TabSection.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         l_FechaIda2.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
@@ -486,26 +488,27 @@ public class f_Reservas extends javax.swing.JFrame {
         if (fechaVuelta != null &&  fechaIda2 != null) {
             fechaIdaLD = fechaIda2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             fechaVueltaLD = fechaVuelta.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            ProgressBar.setValue(10);
+            ProgressBar.setValue(20);
             if(fechaIdaLD.isBefore(fechaVueltaLD) || fechaIdaLD.equals(fechaVueltaLD)){
 
                 if ((fechaIdaLD.isAfter(fechaActual) && fechaVueltaLD.isAfter(fechaActual)) ||
                     (fechaIdaLD.equals(fechaActual) && fechaVueltaLD.equals(fechaActual)) ||
                     (fechaIdaLD.equals(fechaActual) && fechaVueltaLD.isAfter(fechaIdaLD)) ) {
                     
-                    ProgressBar.setValue(20);
+                    ProgressBar.setValue(40);
                     
                     if (!(CB_Destino2.getItemAt(0).equals("Selecciona origen")) && !(CB_Origen2.getItemAt(0).equals("Seleccionar"))) {
+                        ProgressBar.setValue(60);
                         
                         if (!(CB_Hora2.getItemAt(0).equals("Selccionar hora"))) {
-                            ProgressBar.setValue(50);
+                            ProgressBar.setValue(80);
                             datosVueloForm[0]=fechaIdaLD.toString();
                             datosVueloForm[1]=fechaVueltaLD.toString();
                             datosVueloForm[2]=CB_Origen2.getSelectedItem().toString()+"-"+CB_Destino2.getSelectedItem().toString();
                             datosVueloForm[3]=CB_Clase2.getSelectedItem().toString();
                             datosVueloForm[4]=CB_Hora2.getSelectedItem().toString();
                             b_enviarDatos2.setEnabled(true);
-                        JOptionPane.showMessageDialog(null, "Estos son los vuelos para: " + datosVueloForm[0]+ " y "+datosVueloForm[1]+"\n Trayecto: " + datosVueloForm[2]+"-"+datosVueloForm[3]+"\n Clase: "+datosVueloForm[3]+"\n Hora: "+datosVueloForm[4]);
+                        JOptionPane.showMessageDialog(null, "Estos son los vuelos para: " + datosVueloForm[0]+ " y "+datosVueloForm[1]+"\n Trayecto: " + datosVueloForm[2]+"\n Clase: "+datosVueloForm[3]+"\n Hora: "+datosVueloForm[4]);
                         } else {
                             JOptionPane.showMessageDialog(null, "Seleccione una hora");
                         }
@@ -562,23 +565,22 @@ public class f_Reservas extends javax.swing.JFrame {
         fechaIda1 = jdcFechaIda1.getDate();
         datosVueloForm=new String[5];
         if (fechaIda1 != null) {
-            ProgressBar.setValue(10);
+            ProgressBar.setValue(20);
             if (!(CB_Origen1.getItemAt(0).equals("Seleccionar"))) {
                 fechaIdaLD = fechaIda1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                ProgressBar.setValue(20);
+                ProgressBar.setValue(40);
                 
                 if (fechaIdaLD.isAfter(fechaActual) || fechaIdaLD.equals(fechaActual) ) {
-                    
+                    ProgressBar.setValue(60);
                     if (!(CB_Hora1.getItemAt(0).equals("Selccionar hora"))) {
                             
-                        ProgressBar.setValue(30);
+                        ProgressBar.setValue(80);
                         datosVueloForm[0]=fechaIdaLD.toString();
                         datosVueloForm[1]="";
                         datosVueloForm[2]=CB_Origen1.getSelectedItem().toString();
                         datosVueloForm[3]=CB_Clase1.getSelectedItem().toString();
                         datosVueloForm[4]=CB_Hora1.getSelectedItem().toString();
                         b_enviarDatos1.setEnabled(true);
-                        l_PrecioText.setVisible(true);
                         JOptionPane.showMessageDialog(null, "Estos son los vuelos para: " + datosVueloForm[0]+"\n Origen: " + datosVueloForm[2]+"\n Clase: "+datosVueloForm[3]+"\n Hora: "+datosVueloForm[4]);
                         
                         } else {
@@ -624,16 +626,22 @@ public class f_Reservas extends javax.swing.JFrame {
 
     private void TabsTrayectoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TabsTrayectoStateChanged
         ProgressBar.setValue(0);
+        l_PrecioText.setVisible(false);
+        l_PrecioVuelo1.setText("$------");
     }//GEN-LAST:event_TabsTrayectoStateChanged
 
     private void b_enviarDatos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_enviarDatos1ActionPerformed
         b_enviarDatos1.setEnabled(false);
-        TabsOpciones.setSelectedIndex(1);
+        l_PrecioText.setVisible(true);
+        ProgressBar.setValue(100);
+        JOptionPane.showMessageDialog(null, "Reservando e imprimiendo Ticket");
     }//GEN-LAST:event_b_enviarDatos1ActionPerformed
 
     private void b_enviarDatos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_enviarDatos2ActionPerformed
         b_enviarDatos2.setEnabled(false);
-        TabsOpciones.setSelectedIndex(1);
+        l_PrecioText.setVisible(true);
+        ProgressBar.setValue(100);
+        JOptionPane.showMessageDialog(null, "Reservando e imprimiendo Ticket");
     }//GEN-LAST:event_b_enviarDatos2ActionPerformed
 
     private void CB_Destino1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CB_Destino1ActionPerformed
@@ -647,7 +655,7 @@ public class f_Reservas extends javax.swing.JFrame {
     private void CB_Hora1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CB_Hora1MouseClicked
         int selectOrigen = CB_Origen1.getSelectedIndex();
         int selectDestino = CB_Destino1.getSelectedIndex();
-        CB_Hora2.setForeground(Color.BLACK);
+        CB_Hora1.setForeground(Color.BLACK);
         if((selectOrigen==0 && selectDestino==1)||(selectOrigen==2)){
             CB_Hora1.removeAllItems();
             CB_Hora1.addItem("7AM");
@@ -681,15 +689,11 @@ public class f_Reservas extends javax.swing.JFrame {
     
     //Funciones
     
-    public String[] GetDatosForm1(){
+    public String[] GetDatosForm(){
         datosVueloEnviar=datosVueloForm;
         return datosVueloEnviar;
     }
-    
-    public String[] GetDatosForm2(){
-        datosVueloEnviar=datosVueloForm;
-        return datosVueloForm;
-    }
+
     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -746,7 +750,7 @@ public class f_Reservas extends javax.swing.JFrame {
     private javax.swing.JPanel backG;
     private javax.swing.ButtonGroup bg_trayecto;
     private javax.swing.JPanel header;
-    private javax.swing.JPanel info;
+    public javax.swing.JPanel info;
     public com.toedter.calendar.JDateChooser jdcFechaIda1;
     public com.toedter.calendar.JDateChooser jdcFechaIda2;
     public com.toedter.calendar.JDateChooser jdcFechaVuelta;
@@ -764,8 +768,8 @@ public class f_Reservas extends javax.swing.JFrame {
     private javax.swing.JLabel l_Origen;
     private javax.swing.JLabel l_Origen1;
     private javax.swing.JLabel l_Precio;
-    private javax.swing.JPanel l_PrecioText;
-    private javax.swing.JLabel l_PrecioVuelo1;
+    public static javax.swing.JPanel l_PrecioText;
+    public javax.swing.JLabel l_PrecioVuelo1;
     private javax.swing.JLabel l_TReserva;
     private javax.swing.JLabel l_hoy;
     private javax.swing.JPanel tab_vuelos;
