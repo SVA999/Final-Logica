@@ -5,8 +5,6 @@ import java.util.HashMap;
 import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import org.jfree.data.category.DefaultCategoryDataset;
 
 public class BookingAir {
     
@@ -36,6 +34,9 @@ public class BookingAir {
     static int numeroTicket=0;
     static String numeroSilla="";
     static String MatrizAsientosAvion="";
+    static String saveFVuelta="";
+    static String saveTrayecto="";
+    static byte idaOvuelta=0;
     
     
     //Disponibilidad - Contador Gente Total
@@ -46,6 +47,8 @@ public class BookingAir {
     //static HashMap<String, String[][]>vuelos = new HashMap<>();
     //Listas Vuelos
     static ArrayList<String[][]> vuelos = new ArrayList<String[][]>();
+    static ArrayList<String> trayectos = new ArrayList<String>();
+    
     
     //HashMap Tarifas
     static HashMap<String, String>economica = new HashMap<String, String>();
@@ -71,37 +74,47 @@ public class BookingAir {
                 //Escritura
                 
                 
+            //Definir lista
+            trayectos.add("Medellín-Bogotá");
+            trayectos.add("Bogotá-Medellín");
+            trayectos.add("MedellínToB");
+            trayectos.add("Bogotá");
+            trayectos.add("MedellínToS");
+            trayectos.add("San Andrés");
+            trayectos.add("Medellín-San Andrés");
+            trayectos.add("San Andrés-Medellín");
+  
             //Definir Hash Maps
             economica.clear();
             ejecutiva.clear();
             ventasTiquetes.clear();
             
-            economica.put("Medellín-Bogotá", "$225.000");
-            economica.put("Bogotá-Medellín", "$225.000");
-            economica.put("MedellínToB", "$150.000");
-            economica.put("Bogotá", "$150.000");
-            economica.put("MedellínToS", "$220.000");
-            economica.put("San Andrés", "$220.000");
-            economica.put("Medellín-San Andrés", "$380.000");
-            economica.put("San Andrés-Medellín", "$380.000");
+            economica.put(trayectos.get(0), "$225.000");
+            economica.put(trayectos.get(1), "$225.000");
+            economica.put(trayectos.get(2), "$150.000");
+            economica.put(trayectos.get(3), "$150.000");
+            economica.put(trayectos.get(4), "$220.000");
+            economica.put(trayectos.get(5), "$220.000");
+            economica.put(trayectos.get(6), "$380.000");
+            economica.put(trayectos.get(7), "$380.000");
             
-            ejecutiva.put("Medellín-Bogotá", "$400.000");
-            ejecutiva.put("Bogotá-Medellín", "$400.000");
-            ejecutiva.put("MedellínToB", "$290.000");
-            ejecutiva.put("Bogotá", "$290.000");
-            ejecutiva.put("MedellínToS", "$450.000");
-            ejecutiva.put("San Andrés", "$ 450.000");
-            ejecutiva.put("Medellín-San Andrés", "$800.000");
-            ejecutiva.put("San Andrés-Medellín", "$800.000");
+            ejecutiva.put(trayectos.get(0), "$400.000");
+            ejecutiva.put(trayectos.get(1), "$400.000");
+            ejecutiva.put(trayectos.get(2), "$290.000");
+            ejecutiva.put(trayectos.get(3), "$290.000");
+            ejecutiva.put(trayectos.get(4), "$450.000");
+            ejecutiva.put(trayectos.get(5), "$ 450.000");
+            ejecutiva.put(trayectos.get(6), "$800.000");
+            ejecutiva.put(trayectos.get(7), "$800.000");
             
-            ventasTiquetes.put("Medellín-Bogotá", 0);
-            ventasTiquetes.put("Bogotá-Medellín", 0);
-            ventasTiquetes.put("MedellínToB", 0);
-            ventasTiquetes.put("Bogotá", 0);
-            ventasTiquetes.put("MedellínToS", 0);
-            ventasTiquetes.put("San Andrés", 0);
-            ventasTiquetes.put("Medellín-San Andrés", 0);
-            ventasTiquetes.put("San Andrés-Medellín", 0);
+            ventasTiquetes.put(trayectos.get(0), 0);
+            ventasTiquetes.put(trayectos.get(1), 0);
+            ventasTiquetes.put(trayectos.get(2), 0);
+            ventasTiquetes.put(trayectos.get(3), 0);
+            ventasTiquetes.put(trayectos.get(4), 0);
+            ventasTiquetes.put(trayectos.get(5), 0);
+            ventasTiquetes.put(trayectos.get(6), 0);
+            ventasTiquetes.put(trayectos.get(7), 0);
             
                 
         //Listeners de botones del formulario
@@ -129,10 +142,28 @@ public class BookingAir {
                     try {
                         datosVuelo = form_Reservas.GetDatosForm();
                         ClaseMain = form_Reservas.GetClase();
+                        System.out.println("\t\t Crudo");
                         printVectorDatos(datosVuelo);
                         CalcularPrecio();
                         ObtenerDatosGrafica();
+                        
+                        saveTrayecto=datosVuelo[2];
+                        saveFVuelta=datosVuelo[1];
+                        idaOvuelta=1;
+                        datosVuelo[1]="";
+                        ReordenarTrayecto(idaOvuelta);
+                        System.out.println("\t\t Vuelo Ida");
+                        printVectorDatos(datosVuelo);
                         Llenar_avion(vuelos);
+                        
+                        datosVuelo[0]=saveFVuelta;
+                        datosVuelo[2]=saveTrayecto;
+                        idaOvuelta=2;
+                        ReordenarTrayecto(idaOvuelta);
+                        System.out.println("\t\t Vuelo Regreso");
+                        printVectorDatos(datosVuelo);
+                        Llenar_avion(vuelos);
+                        
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null,"Error Listener:" + e + ",\nException: " + ex);
                     }
@@ -177,6 +208,18 @@ public class BookingAir {
             System.out.print("Dato"+ i+": "+datosVuelo[i]+"\t");
         }
         System.out.print("\n");
+        
+        
+        /*
+        for (String[][] matriz : vuelos) {
+            for (String[] fila : matriz) {
+                for (String elemento : fila) {
+                    System.out.print(elemento + " ");
+                }
+                System.out.println();
+            }
+            System.out.println();
+        }*/
     }
     
     public static void inciar_avion(String[][] m_asientosAvion) throws Exception{
@@ -193,6 +236,56 @@ public class BookingAir {
             throw new Exception("Ocurrio un error al vaciar el avion: " + e);
         }
     }
+    
+    public static void ReordenarTrayecto(byte idaOvuelta) throws Exception {
+        try {
+            /*
+            trayectos.add("Medellín-Bogotá");
+            trayectos.add("Bogotá-Medellín");
+            trayectos.add("MedellínToB");
+            trayectos.add("Bogotá");
+            trayectos.add("MedellínToS");
+            trayectos.add("San Andrés");
+            trayectos.add("Medellín-San Andrés");
+            trayectos.add("San Andrés-Medellín");
+            */
+            
+            switch (idaOvuelta) {
+                case 1:
+                    if (datosVuelo[2].equals(trayectos.get(0))) {
+                    datosVuelo[2]="MedellínToB";
+                    } else if (datosVuelo[2].equals(trayectos.get(1))) {
+                        datosVuelo[2]="Bogotá";
+                    } else if (datosVuelo[2].equals(trayectos.get(6))) {
+                        datosVuelo[2]="MedellínToS";
+                    } else if (datosVuelo[2].equals(trayectos.get(7))) {
+                        datosVuelo[2]="San Andrés";
+                    } else{
+                        datosVuelo[2]=datosVuelo[2];
+                    }    
+                    break;
+                case 2:
+                    if (datosVuelo[2].equals(trayectos.get(0))) {
+                    datosVuelo[2]="Bogotá";
+                    } else if (datosVuelo[2].equals(trayectos.get(1))) {
+                        datosVuelo[2]="MedellínToB";
+                    } else if (datosVuelo[2].equals(trayectos.get(6))) {
+                        datosVuelo[2]="San Andrés";
+                    } else if (datosVuelo[2].equals(trayectos.get(7))) {
+                        datosVuelo[2]="MedellínToS";
+                    } else{
+                        datosVuelo[2]=datosVuelo[2];
+                    }  
+                    break;
+                default:
+                    throw new Exception();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al ReordenarTrayecto: "+e);
+            throw new Exception("Error al ReordenarTrayecto: "+e);
+        }
+    }
+    
     
     
     public static void CalcularPrecio() throws Exception {
@@ -264,6 +357,7 @@ public class BookingAir {
 
                         validacion = true;
                         System.out.println(validacion);
+                        break;
                     }
                 }
 
@@ -336,14 +430,14 @@ public class BookingAir {
                 //Imprime
                 MatrizAsientosAvion="";
                 for (int fila = 1; fila < elem.length; fila++) {
-                    System.out.print(fila);
+                    //System.out.print(fila);
                     MatrizAsientosAvion+=fila;
                     for (int colum = 0; colum < elem[0].length; colum++) {
-                        System.out.print("\t" + elem[fila][colum]);
+                        //System.out.print("\t" + elem[fila][colum]);
                         MatrizAsientosAvion+="    \t"+elem[fila][colum];
                     }
 
-                    System.out.println("");
+                    //System.out.println("");
                     MatrizAsientosAvion+="\n";
                 }
                 JOptionPane.showMessageDialog(null,"Esta es la ocupacion actual del avion: \n"+MatrizAsientosAvion);
@@ -395,14 +489,14 @@ public class BookingAir {
                 //Imprime
                 MatrizAsientosAvion="";
                 for (int fila = 1; fila < elem.length; fila++) {
-                    System.out.print(fila);
+                   // System.out.print(fila);
                     MatrizAsientosAvion+=fila;
                     for (int colum = 0; colum < elem[0].length; colum++) {
-                        System.out.print("\t" + elem[fila][colum]);
+                        //System.out.print("\t" + elem[fila][colum]);
                         MatrizAsientosAvion+="    "+elem[fila][colum];
                     }
 
-                    System.out.println("");
+                    //System.out.println("");
                     MatrizAsientosAvion+="\n";
                 }
                 JOptionPane.showMessageDialog(null,"Esta es la ocupacion actual del avion: \n"+ MatrizAsientosAvion);
