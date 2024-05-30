@@ -1,0 +1,5 @@
+Ticket #1
+Código de vuelo: 2024-05-31//Bogotá/7AM
+Silla: 4A
+Clase: Económica
+Valor: $150.000

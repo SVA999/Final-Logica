@@ -1,11 +1,14 @@
 package bookingair;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.util.Date;
 import javax.swing.*;
 import java.time.*;
+import org.jfree.chart.*;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.*;
 
 
 public class f_Reservas extends javax.swing.JFrame {
@@ -15,8 +18,11 @@ public class f_Reservas extends javax.swing.JFrame {
     public LocalDate fechaIdaLD,fechaVueltaLD;
     public Date fechaIda1, fechaIda2, fechaVuelta;
     public String horaVuelo="";
-    public  String[] datosVueloForm = new String[5];
-    public  String[] datosVueloEnviar = new String[5];
+    public  String[] datosVueloForm = new String[4];
+    public  String[] datosVueloEnviar = new String[4];
+    public String ClaseMain = "";
+    public String Clase = "";
+    public static DefaultCategoryDataset datosForm = new DefaultCategoryDataset();;
     
     public f_Reservas() {
         setUndecorated(true);
@@ -24,7 +30,6 @@ public class f_Reservas extends javax.swing.JFrame {
         l_hoy.setText(fechaActual.toString()); 
         fechaIdaLD=LocalDate.now();
         fechaVueltaLD=LocalDate.now();
-        l_PrecioText.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -36,6 +41,7 @@ public class f_Reservas extends javax.swing.JFrame {
         header = new javax.swing.JPanel();
         bExit = new javax.swing.JButton();
         info = new javax.swing.JPanel();
+        b_verGraficas = new javax.swing.JButton();
         l_TReserva = new javax.swing.JLabel();
         l_hoy = new javax.swing.JLabel();
         avionIMG = new javax.swing.JLabel();
@@ -43,7 +49,7 @@ public class f_Reservas extends javax.swing.JFrame {
         tf_WallBorrar = new javax.swing.JTextField();
         TabsOpciones = new javax.swing.JTabbedPane();
         l_Hora1 = new javax.swing.JPanel();
-        ProgressBar = new javax.swing.JProgressBar();
+        ProgressBar1 = new javax.swing.JProgressBar();
         TabsTrayecto = new javax.swing.JTabbedPane();
         DosTrayectos = new javax.swing.JPanel();
         l_FechaIda1 = new javax.swing.JLabel();
@@ -77,11 +83,11 @@ public class f_Reservas extends javax.swing.JFrame {
         l_confirmDatos1 = new javax.swing.JLabel();
         l_FechaIda = new javax.swing.JLabel();
         tab_vuelos = new javax.swing.JPanel();
+        ProgressBar2 = new javax.swing.JProgressBar();
         panelTiquete = new javax.swing.JPanel();
         l_PrecioText = new javax.swing.JPanel();
         l_Precio = new javax.swing.JLabel();
         l_PrecioVuelo1 = new javax.swing.JLabel();
-        l_Disfruta = new javax.swing.JLabel();
         l_HoraV = new javax.swing.JLabel();
         l_FechasV = new javax.swing.JLabel();
         l_TrayectoV = new javax.swing.JLabel();
@@ -91,8 +97,15 @@ public class f_Reservas extends javax.swing.JFrame {
         l_datoVueltaV = new javax.swing.JLabel();
         l_datoTrayectoV = new javax.swing.JLabel();
         l_datoClaseV = new javax.swing.JLabel();
+        l_SillaV = new javax.swing.JLabel();
+        l_datoSillaV = new javax.swing.JLabel();
+        l_Disfruta1 = new javax.swing.JLabel();
         b_imprimirT = new javax.swing.JButton();
         b_volver1 = new javax.swing.JButton();
+        l_DisponibleV = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        b_volver2 = new javax.swing.JButton();
+        panel_Grafica = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -140,6 +153,19 @@ public class f_Reservas extends javax.swing.JFrame {
         info.setBackground(new java.awt.Color(88, 129, 87));
         info.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        b_verGraficas.setBackground(new java.awt.Color(58, 90, 64));
+        b_verGraficas.setFont(new java.awt.Font("Dubai", 1, 12)); // NOI18N
+        b_verGraficas.setForeground(new java.awt.Color(255, 255, 255));
+        b_verGraficas.setText("Ver graficas ventas");
+        b_verGraficas.setBorder(null);
+        b_verGraficas.setFocusable(false);
+        b_verGraficas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_verGraficasActionPerformed(evt);
+            }
+        });
+        info.add(b_verGraficas, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 120, 30));
+
         l_TReserva.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
         l_TReserva.setForeground(new java.awt.Color(255, 255, 255));
         l_TReserva.setText("BIENVENID@");
@@ -158,7 +184,7 @@ public class f_Reservas extends javax.swing.JFrame {
         b_VaciarDatos.setBackground(new java.awt.Color(88, 129, 87));
         b_VaciarDatos.setFont(new java.awt.Font("Dubai", 1, 12)); // NOI18N
         b_VaciarDatos.setForeground(new java.awt.Color(255, 255, 255));
-        b_VaciarDatos.setText("Borrar datos pasados");
+        b_VaciarDatos.setText("Borrar datos");
         b_VaciarDatos.setBorder(null);
         b_VaciarDatos.setEnabled(false);
         b_VaciarDatos.setFocusable(false);
@@ -174,14 +200,14 @@ public class f_Reservas extends javax.swing.JFrame {
         tf_WallBorrar.setFont(new java.awt.Font("Dubai", 0, 12)); // NOI18N
         tf_WallBorrar.setForeground(new java.awt.Color(58, 90, 64));
         tf_WallBorrar.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        tf_WallBorrar.setText("Acceso Admin");
+        tf_WallBorrar.setText("Acceso: admin");
         tf_WallBorrar.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 2, 2, 2));
         tf_WallBorrar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tf_WallBorrarActionPerformed(evt);
             }
         });
-        info.add(tf_WallBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, 160, 20));
+        info.add(tf_WallBorrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 160, 20));
 
         backG.add(info, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 200, 570));
 
@@ -196,9 +222,9 @@ public class f_Reservas extends javax.swing.JFrame {
         l_Hora1.setBackground(new java.awt.Color(218, 215, 205));
         l_Hora1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        ProgressBar.setBackground(new java.awt.Color(245, 243, 244));
-        ProgressBar.setForeground(new java.awt.Color(88, 129, 87));
-        l_Hora1.add(ProgressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 620, 10));
+        ProgressBar1.setBackground(new java.awt.Color(245, 243, 244));
+        ProgressBar1.setForeground(new java.awt.Color(88, 129, 87));
+        l_Hora1.add(ProgressBar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 620, 10));
 
         TabsTrayecto.setBackground(new java.awt.Color(218, 215, 205));
         TabsTrayecto.setForeground(new java.awt.Color(52, 78, 65));
@@ -467,6 +493,10 @@ public class f_Reservas extends javax.swing.JFrame {
         tab_vuelos.setBackground(new java.awt.Color(218, 215, 205));
         tab_vuelos.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        ProgressBar2.setBackground(new java.awt.Color(245, 243, 244));
+        ProgressBar2.setForeground(new java.awt.Color(88, 129, 87));
+        tab_vuelos.add(ProgressBar2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 620, 10));
+
         panelTiquete.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         l_PrecioText.setBackground(new java.awt.Color(58, 90, 64));
@@ -486,55 +516,64 @@ public class f_Reservas extends javax.swing.JFrame {
         l_PrecioVuelo1.setText("$ ------");
         l_PrecioText.add(l_PrecioVuelo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 330, 20));
 
-        panelTiquete.add(l_PrecioText, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 330, 70));
-
-        l_Disfruta.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
-        l_Disfruta.setForeground(new java.awt.Color(88, 129, 87));
-        l_Disfruta.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        l_Disfruta.setText("Disfruta tu vuelo");
-        panelTiquete.add(l_Disfruta, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 330, 20));
+        panelTiquete.add(l_PrecioText, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 330, 70));
 
         l_HoraV.setFont(new java.awt.Font("Dubai", 1, 16)); // NOI18N
         l_HoraV.setForeground(new java.awt.Color(88, 129, 87));
         l_HoraV.setText("Hora");
-        panelTiquete.add(l_HoraV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 150, -1, 20));
+        panelTiquete.add(l_HoraV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, 20));
 
         l_FechasV.setFont(new java.awt.Font("Dubai", 1, 16)); // NOI18N
         l_FechasV.setForeground(new java.awt.Color(88, 129, 87));
         l_FechasV.setText("Fechas:");
-        panelTiquete.add(l_FechasV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, 20));
+        panelTiquete.add(l_FechasV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, 20));
 
         l_TrayectoV.setFont(new java.awt.Font("Dubai", 1, 16)); // NOI18N
         l_TrayectoV.setForeground(new java.awt.Color(88, 129, 87));
         l_TrayectoV.setText("Trayecto");
-        panelTiquete.add(l_TrayectoV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, -1, 20));
+        panelTiquete.add(l_TrayectoV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, -1, 20));
 
         l_ClaseV.setFont(new java.awt.Font("Dubai", 1, 16)); // NOI18N
         l_ClaseV.setForeground(new java.awt.Color(88, 129, 87));
         l_ClaseV.setText("Clase");
-        panelTiquete.add(l_ClaseV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, -1, 20));
+        panelTiquete.add(l_ClaseV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, -1, 20));
 
         l_datoIdaV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_datoIdaV.setText("Ida:");
-        panelTiquete.add(l_datoIdaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 260, 20));
+        panelTiquete.add(l_datoIdaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 260, 20));
 
         l_datoHoraV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_datoHoraV.setText("hora");
-        panelTiquete.add(l_datoHoraV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 170, 130, 20));
+        panelTiquete.add(l_datoHoraV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 130, 20));
 
         l_datoVueltaV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_datoVueltaV.setText("Vuelta:");
-        panelTiquete.add(l_datoVueltaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 260, 20));
+        panelTiquete.add(l_datoVueltaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 260, 20));
 
         l_datoTrayectoV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_datoTrayectoV.setText("Trayecto");
-        panelTiquete.add(l_datoTrayectoV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 260, 20));
+        panelTiquete.add(l_datoTrayectoV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 140, 260, 20));
 
         l_datoClaseV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
         l_datoClaseV.setText("Clase");
-        panelTiquete.add(l_datoClaseV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 220, 130, 20));
+        panelTiquete.add(l_datoClaseV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 280, 130, 20));
 
-        tab_vuelos.add(panelTiquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 20, 330, 430));
+        l_SillaV.setFont(new java.awt.Font("Dubai", 1, 16)); // NOI18N
+        l_SillaV.setForeground(new java.awt.Color(88, 129, 87));
+        l_SillaV.setText("Silla");
+        panelTiquete.add(l_SillaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, -1, 20));
+
+        l_datoSillaV.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
+        l_datoSillaV.setText("Silla");
+        panelTiquete.add(l_datoSillaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 230, 130, 20));
+
+        l_Disfruta1.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
+        l_Disfruta1.setForeground(new java.awt.Color(88, 129, 87));
+        l_Disfruta1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        l_Disfruta1.setText("Disfruta tu vuelo");
+        panelTiquete.add(l_Disfruta1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 330, 20));
+
+        tab_vuelos.add(panelTiquete, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, 330, 400));
 
         b_imprimirT.setBackground(new java.awt.Color(88, 129, 87));
         b_imprimirT.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
@@ -554,6 +593,7 @@ public class f_Reservas extends javax.swing.JFrame {
         b_volver1.setForeground(new java.awt.Color(255, 255, 255));
         b_volver1.setText("Volver");
         b_volver1.setBorder(null);
+        b_volver1.setEnabled(false);
         b_volver1.setFocusable(false);
         b_volver1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -562,7 +602,44 @@ public class f_Reservas extends javax.swing.JFrame {
         });
         tab_vuelos.add(b_volver1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 480, 220, 30));
 
+        l_DisponibleV.setFont(new java.awt.Font("Dubai", 1, 18)); // NOI18N
+        l_DisponibleV.setForeground(new java.awt.Color(88, 129, 87));
+        l_DisponibleV.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        l_DisponibleV.setText("Disponible");
+        tab_vuelos.add(l_DisponibleV, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 160, 20));
+
         TabsOpciones.addTab("Vuelos", tab_vuelos);
+
+        jPanel1.setBackground(new java.awt.Color(218, 215, 205));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        b_volver2.setBackground(new java.awt.Color(88, 129, 87));
+        b_volver2.setFont(new java.awt.Font("Dubai", 1, 14)); // NOI18N
+        b_volver2.setForeground(new java.awt.Color(255, 255, 255));
+        b_volver2.setText("Volver a reservas");
+        b_volver2.setBorder(null);
+        b_volver2.setFocusable(false);
+        b_volver2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                b_volver2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(b_volver2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 460, 220, 30));
+
+        javax.swing.GroupLayout panel_GraficaLayout = new javax.swing.GroupLayout(panel_Grafica);
+        panel_Grafica.setLayout(panel_GraficaLayout);
+        panel_GraficaLayout.setHorizontalGroup(
+            panel_GraficaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 550, Short.MAX_VALUE)
+        );
+        panel_GraficaLayout.setVerticalGroup(
+            panel_GraficaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+
+        jPanel1.add(panel_Grafica, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 550, 400));
+
+        TabsOpciones.addTab("Graficas Vuelos", jPanel1);
 
         backG.add(TabsOpciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 30, 650, 570));
 
@@ -607,30 +684,30 @@ public class f_Reservas extends javax.swing.JFrame {
     private void b_comfirDatos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_comfirDatos2ActionPerformed
         fechaIda2 = jdcFechaIda2.getDate();
         fechaVuelta = jdcFechaVuelta.getDate();
-        datosVueloForm=new String[5];
+        datosVueloForm=new String[4];
+        Clase = "";
 
         if (fechaVuelta != null &&  fechaIda2 != null) {
             fechaIdaLD = fechaIda2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             fechaVueltaLD = fechaVuelta.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            ProgressBar.setValue(20);
+            ProgressBar1.setValue(20);
             if(fechaIdaLD.isBefore(fechaVueltaLD) || fechaIdaLD.equals(fechaVueltaLD)){
 
                 if ((fechaIdaLD.isAfter(fechaActual) && fechaVueltaLD.isAfter(fechaActual)) ||
-                    (fechaIdaLD.equals(fechaActual) && fechaVueltaLD.equals(fechaActual)) ||
                     (fechaIdaLD.equals(fechaActual) && fechaVueltaLD.isAfter(fechaIdaLD)) ) {
                     
-                    ProgressBar.setValue(40);
+                    ProgressBar1.setValue(40);
                     
                     if (!(CB_Destino2.getItemAt(0).equals("Selecciona origen")) && !(CB_Origen2.getItemAt(0).equals("Seleccionar"))) {
-                        ProgressBar.setValue(60);
+                        ProgressBar1.setValue(60);
                         
                         if (!(CB_Hora2.getItemAt(0).equals("Selccionar hora"))) {
-                            ProgressBar.setValue(80);
+                            ProgressBar1.setValue(80);
                             datosVueloForm[0]=fechaIdaLD.toString();
                             datosVueloForm[1]=fechaVueltaLD.toString();
                             datosVueloForm[2]=CB_Origen2.getSelectedItem().toString()+"-"+CB_Destino2.getSelectedItem().toString();
-                            datosVueloForm[3]=CB_Clase2.getSelectedItem().toString();
-                            datosVueloForm[4]=CB_Hora2.getSelectedItem().toString();
+                            datosVueloForm[3]=CB_Hora2.getSelectedItem().toString();
+                            Clase=CB_Clase2.getSelectedItem().toString();
                             b_enviarDatos2.setEnabled(true);
                             l_confirmDatos2.setText("Ahora pudes reservar sin problemas");
                             //JOptionPane.showMessageDialog(null, "Estos son los vuelos para: " + datosVueloForm[0]+ " y "+datosVueloForm[1]+"\n Trayecto: " + datosVueloForm[2]+"\n Clase: "+datosVueloForm[3]+"\n Hora: "+datosVueloForm[4]);
@@ -642,7 +719,7 @@ public class f_Reservas extends javax.swing.JFrame {
                     }
 
                 } else {
-                    JOptionPane.showMessageDialog(null, "Seleccione fechas validas");
+                    JOptionPane.showMessageDialog(null, "Seleccione fechas validas\n -No fechas anteriores a hoy\n -La fecha de regreso debe ser despues de la de ida");
                 }
 
             }else{
@@ -677,7 +754,18 @@ public class f_Reservas extends javax.swing.JFrame {
     }//GEN-LAST:event_CB_Origen2ActionPerformed
 
     private void CB_Destino2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CB_Destino2ActionPerformed
-        // TODO add your handling code here:
+        int selectOrigen = CB_Origen2.getSelectedIndex();
+        int selectDestino = CB_Origen2.getSelectedIndex();
+        CB_Hora2.setForeground(Color.BLACK);
+        if((selectOrigen==0 && selectDestino==1)||(selectOrigen==2)){
+            CB_Hora2.removeAllItems();
+            CB_Hora2.addItem("7AM");
+        } else {
+            CB_Hora2.removeAllItems();
+            CB_Hora2.addItem("7AM");
+            CB_Hora2.addItem("12AM");
+            CB_Hora2.addItem("5PM");
+        }
     }//GEN-LAST:event_CB_Destino2ActionPerformed
 
     private void CB_Clase2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CB_Clase2ActionPerformed
@@ -688,23 +776,31 @@ public class f_Reservas extends javax.swing.JFrame {
     
     private void b_comfirDatos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_comfirDatos1ActionPerformed
         fechaIda1 = jdcFechaIda1.getDate();
-        datosVueloForm=new String[5];
+        datosVueloForm=new String[4];
+        Clase = "";
+        
         if (fechaIda1 != null) {
-            ProgressBar.setValue(20);
+            ProgressBar1.setValue(20);
             if (!(CB_Origen1.getItemAt(0).equals("Seleccionar"))) {
                 fechaIdaLD = fechaIda1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                ProgressBar.setValue(40);
+                ProgressBar1.setValue(40);
                 
                 if (fechaIdaLD.isAfter(fechaActual) || fechaIdaLD.equals(fechaActual) ) {
-                    ProgressBar.setValue(60);
+                    ProgressBar1.setValue(60);
                     if (!(CB_Hora1.getItemAt(0).equals("Selccionar hora"))) {
                             
-                        ProgressBar.setValue(80);
+                        ProgressBar1.setValue(80);
                         datosVueloForm[0]=fechaIdaLD.toString();
                         datosVueloForm[1]="";
-                        datosVueloForm[2]=CB_Origen1.getSelectedItem().toString();
-                        datosVueloForm[3]=CB_Clase1.getSelectedItem().toString();
-                        datosVueloForm[4]=CB_Hora1.getSelectedItem().toString();
+                        if (CB_Destino1.getSelectedItem()=="San Andrés") {
+                            datosVueloForm[2]=CB_Origen1.getSelectedItem().toString()+"ToS";
+                        } else if (CB_Destino1.getSelectedItem()=="Bogotá"){
+                            datosVueloForm[2]=CB_Origen1.getSelectedItem().toString()+"ToB";
+                        } else{
+                            datosVueloForm[2]=CB_Origen1.getSelectedItem().toString();
+                        }
+                        datosVueloForm[3]=CB_Hora1.getSelectedItem().toString();
+                        Clase=CB_Clase1.getSelectedItem().toString();
                         b_enviarDatos1.setEnabled(true);
                         l_confirmDatos1.setText("Ahora pudes reservar sin problemas");
                         //JOptionPane.showMessageDialog(null, "Estos son los vuelos para: " + datosVueloForm[0]+"\n Origen: " + datosVueloForm[2]+"\n Clase: "+datosVueloForm[3]+"\n Hora: "+datosVueloForm[4]);
@@ -714,7 +810,7 @@ public class f_Reservas extends javax.swing.JFrame {
                         }
                     
                 } else {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fecha valida");
+                    JOptionPane.showMessageDialog(null, "Seleccione una fecha valida\n -No fecha anterior a hoy");
                 }
             }else {
                 JOptionPane.showMessageDialog(null, "Seleccione su origen");
@@ -751,45 +847,65 @@ public class f_Reservas extends javax.swing.JFrame {
     }//GEN-LAST:event_CB_Clase1ActionPerformed
 
     private void TabsTrayectoStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_TabsTrayectoStateChanged
-        ProgressBar.setValue(0);
-        l_PrecioText.setVisible(false);
+        ProgressBar1.setValue(0);
         l_PrecioVuelo1.setText("$------");
     }//GEN-LAST:event_TabsTrayectoStateChanged
 
     private void b_enviarDatos1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_enviarDatos1ActionPerformed
         b_enviarDatos1.setEnabled(false);
-        l_PrecioText.setVisible(true);
-        ProgressBar.setValue(100);
+        b_imprimirT.setEnabled(true);
+        ProgressBar2.setValue(100);
         l_confirmDatos1.setText("Requiere confirmar los datos");
         //TabsOpciones.setEnabled(true);
-        TabsOpciones.setSelectedIndex(1);
         l_datoIdaV.setText("Ida: "+datosVueloForm[0]);
         l_datoVueltaV.setText("Vuelta: "+datosVueloForm[1]);
         l_TrayectoV.setText("Trayecto - Solo ida");
         l_datoTrayectoV.setText(datosVueloForm[2]+ " destino " + CB_Destino1.getSelectedItem().toString());
-        l_datoClaseV.setText(datosVueloForm[3]);
-        l_datoHoraV.setText(datosVueloForm[4]);
+        l_datoClaseV.setText(Clase);
+        l_datoHoraV.setText(datosVueloForm[3]);
+        if ("No Disponible".equals(l_DisponibleV.getText())) {
+            TabsOpciones.setSelectedIndex(0);
+            l_DisponibleV.setText("Disponible");
+        } else {
+            TabsOpciones.setSelectedIndex(1);
+        }
         //JOptionPane.showMessageDialog(null, "Reservando e imprimiendo Ticket");
     }//GEN-LAST:event_b_enviarDatos1ActionPerformed
 
     private void b_enviarDatos2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_enviarDatos2ActionPerformed
         b_enviarDatos2.setEnabled(false);
-        l_PrecioText.setVisible(true);
-        ProgressBar.setValue(100);
+        b_imprimirT.setEnabled(true);
+        ProgressBar2.setValue(100);
         l_confirmDatos2.setText("Requiere confirmar los datos");
         //TabsOpciones.setEnabled(true);
-        TabsOpciones.setSelectedIndex(1);
         l_datoIdaV.setText("Ida: "+datosVueloForm[0]);
         l_datoVueltaV.setText("Vuelta: "+datosVueloForm[1]);
         l_TrayectoV.setText("Trayecto - Ida y Vuelta");
         l_datoTrayectoV.setText(datosVueloForm[2]);
-        l_datoClaseV.setText(datosVueloForm[3]);
-        l_datoHoraV.setText(datosVueloForm[4]);
+        l_datoClaseV.setText(Clase);
+        l_datoHoraV.setText(datosVueloForm[3]);
+        if ("No Disponible".equals(l_DisponibleV.getText())) {
+            TabsOpciones.setSelectedIndex(0);
+            l_DisponibleV.setText("Disponible");
+        } else {
+            TabsOpciones.setSelectedIndex(1);
+        }
         //JOptionPane.showMessageDialog(null, "Reservando e imprimiendo Ticket");
     }//GEN-LAST:event_b_enviarDatos2ActionPerformed
 
     private void CB_Destino1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CB_Destino1ActionPerformed
-        // TODO add your handling code here:
+        int selectOrigen = CB_Origen1.getSelectedIndex();
+        int selectDestino = CB_Destino1.getSelectedIndex();
+        CB_Hora1.setForeground(Color.BLACK);
+        if((selectOrigen==0 && selectDestino==1)||(selectOrigen==2)){
+            CB_Hora1.removeAllItems();
+            CB_Hora1.addItem("7AM");
+        } else {
+            CB_Hora1.removeAllItems();
+            CB_Hora1.addItem("7AM");
+            CB_Hora1.addItem("12AM");
+            CB_Hora1.addItem("5PM");
+        }
     }//GEN-LAST:event_CB_Destino1ActionPerformed
 
     private void CB_Hora1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CB_Hora1ActionPerformed
@@ -832,10 +948,14 @@ public class f_Reservas extends javax.swing.JFrame {
 
     private void b_imprimirTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_imprimirTActionPerformed
         JOptionPane.showMessageDialog(null,"Imprimiendo");
+        b_volver1.setEnabled(true);
+        b_imprimirT.setEnabled(false);
     }//GEN-LAST:event_b_imprimirTActionPerformed
 
     private void b_volver1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_volver1ActionPerformed
         TabsOpciones.setSelectedIndex(0);
+        ProgressBar1.setValue(0);
+        b_volver1.setEnabled(false);
     }//GEN-LAST:event_b_volver1ActionPerformed
 
     private void b_VaciarDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_VaciarDatosActionPerformed
@@ -850,12 +970,57 @@ public class f_Reservas extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tf_WallBorrarActionPerformed
 
+    private void b_volver2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_volver2ActionPerformed
+        TabsOpciones.setSelectedIndex(0);
+    }//GEN-LAST:event_b_volver2ActionPerformed
+
+    private void b_verGraficasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_b_verGraficasActionPerformed
+        TabsOpciones.setSelectedIndex(2);
+        
+        JFreeChart graficoVuelos2D = ChartFactory.createBarChart(
+                "Cantidad venta de tiquetes", 
+                "Trayecto", 
+                "Cantidad", 
+                datosForm, 
+                PlotOrientation.VERTICAL, 
+                true, 
+                true, 
+                false
+        );
+        
+        JFreeChart graficoVuelos3D = ChartFactory.createBarChart3D(
+                "Cantidad venta de tiquetes",
+                "Trayecto",
+                "Cantidad",
+                datosForm, 
+                PlotOrientation.VERTICAL, 
+                true, 
+                true, 
+                false
+        );
+        
+        ChartPanel panelGraficas = new ChartPanel(graficoVuelos2D);
+        panelGraficas.setMouseWheelEnabled(true);
+        panelGraficas.setPreferredSize(new Dimension(550,400));
+        
+        panel_Grafica.setLayout(new BorderLayout());
+        panel_Grafica.add(panelGraficas,BorderLayout.NORTH);
+        pack();
+        repaint();
+     
+    }//GEN-LAST:event_b_verGraficasActionPerformed
+
     
     //Funciones
     
     public String[] GetDatosForm(){
         datosVueloEnviar=datosVueloForm;
         return datosVueloEnviar;
+    }
+    
+    public String GetClase(){
+        ClaseMain=Clase;
+        return ClaseMain;
     }
 
     
@@ -901,9 +1066,10 @@ public class f_Reservas extends javax.swing.JFrame {
     public javax.swing.JComboBox<String> CB_Origen1;
     public javax.swing.JComboBox<String> CB_Origen2;
     private javax.swing.JPanel DosTrayectos;
-    private javax.swing.JProgressBar ProgressBar;
+    private javax.swing.JProgressBar ProgressBar1;
+    private javax.swing.JProgressBar ProgressBar2;
     private javax.swing.JPanel TabSection;
-    private javax.swing.JTabbedPane TabsOpciones;
+    public static javax.swing.JTabbedPane TabsOpciones;
     private javax.swing.JTabbedPane TabsTrayecto;
     private javax.swing.JLabel avionIMG;
     private javax.swing.JButton bExit;
@@ -913,11 +1079,14 @@ public class f_Reservas extends javax.swing.JFrame {
     public javax.swing.JButton b_enviarDatos1;
     public javax.swing.JButton b_enviarDatos2;
     public javax.swing.JButton b_imprimirT;
+    public javax.swing.JButton b_verGraficas;
     public javax.swing.JButton b_volver1;
+    public javax.swing.JButton b_volver2;
     private javax.swing.JPanel backG;
     private javax.swing.ButtonGroup bg_trayecto;
     private javax.swing.JPanel header;
     public javax.swing.JPanel info;
+    private javax.swing.JPanel jPanel1;
     public com.toedter.calendar.JDateChooser jdcFechaIda1;
     public com.toedter.calendar.JDateChooser jdcFechaIda2;
     public com.toedter.calendar.JDateChooser jdcFechaVuelta;
@@ -926,7 +1095,8 @@ public class f_Reservas extends javax.swing.JFrame {
     private javax.swing.JLabel l_ClaseV;
     private javax.swing.JLabel l_Destino1;
     private javax.swing.JLabel l_Destino2;
-    private javax.swing.JLabel l_Disfruta;
+    private javax.swing.JLabel l_Disfruta1;
+    public javax.swing.JLabel l_DisponibleV;
     private javax.swing.JLabel l_FechaIda;
     private javax.swing.JLabel l_FechaIda1;
     private javax.swing.JLabel l_FechaIda2;
@@ -941,6 +1111,7 @@ public class f_Reservas extends javax.swing.JFrame {
     private javax.swing.JLabel l_Precio;
     public static javax.swing.JPanel l_PrecioText;
     public javax.swing.JLabel l_PrecioVuelo1;
+    private javax.swing.JLabel l_SillaV;
     private javax.swing.JLabel l_TReserva;
     private javax.swing.JLabel l_TrayectoV;
     private javax.swing.JLabel l_confirmDatos1;
@@ -948,10 +1119,12 @@ public class f_Reservas extends javax.swing.JFrame {
     private javax.swing.JLabel l_datoClaseV;
     private javax.swing.JLabel l_datoHoraV;
     private javax.swing.JLabel l_datoIdaV;
+    public javax.swing.JLabel l_datoSillaV;
     private javax.swing.JLabel l_datoTrayectoV;
     private javax.swing.JLabel l_datoVueltaV;
     private javax.swing.JLabel l_hoy;
     private javax.swing.JPanel panelTiquete;
+    private javax.swing.JPanel panel_Grafica;
     private javax.swing.JPanel tab_vuelos;
     private javax.swing.JTextField tf_WallBorrar;
     // End of variables declaration//GEN-END:variables

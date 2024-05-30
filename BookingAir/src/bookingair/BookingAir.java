@@ -4,6 +4,9 @@ import java.awt.event.*;
 import java.util.HashMap;
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 public class BookingAir {
     
@@ -25,18 +28,29 @@ public class BookingAir {
     //Datos
         //Del Formulario
     static String[] datosVuelo; 
+        //Obtener Clase Vuelo
+    static String ClaseMain;
 
         //Otros
     static String valorVuelo="";
     static int numeroTicket=0;
+    static String numeroSilla="";
+    static String MatrizAsientosAvion="";
+    
+    
+    //Disponibilidad - Contador Gente Total
+    static int countGen  = 0;
     
     
     //HashMap Vuelos
-    static HashMap<String, String[][]>vuelos = new HashMap<>();
+    //static HashMap<String, String[][]>vuelos = new HashMap<>();
+    //Listas Vuelos
+    static ArrayList<String[][]> vuelos = new ArrayList<String[][]>();
     
     //HashMap Tarifas
     static HashMap<String, String>economica = new HashMap<String, String>();
     static HashMap<String, String>ejecutiva = new HashMap<String, String>();
+    static HashMap<String, Integer>ventasTiquetes = new HashMap<String, Integer>();
 
     public static void main(String[] args) {
 
@@ -55,6 +69,39 @@ public class BookingAir {
             //file_vuelos = new FileReader("E:\\Santiago\\Programacion\\UPB\\Proyectos\\Final-Logica\\BookingAir\\src\\bookingair\\files\\vuelos.txt");
             //dato_vuelos= new BufferedReader(file_vuelos);
                 //Escritura
+                
+                
+            //Definir Hash Maps
+            economica.clear();
+            ejecutiva.clear();
+            ventasTiquetes.clear();
+            
+            economica.put("Medellín-Bogotá", "$225.000");
+            economica.put("Bogotá-Medellín", "$225.000");
+            economica.put("MedellínToB", "$150.000");
+            economica.put("Bogotá", "$150.000");
+            economica.put("MedellínToS", "$220.000");
+            economica.put("San Andrés", "$220.000");
+            economica.put("Medellín-San Andrés", "$380.000");
+            economica.put("San Andrés-Medellín", "$380.000");
+            
+            ejecutiva.put("Medellín-Bogotá", "$400.000");
+            ejecutiva.put("Bogotá-Medellín", "$400.000");
+            ejecutiva.put("MedellínToB", "$290.000");
+            ejecutiva.put("Bogotá", "$290.000");
+            ejecutiva.put("MedellínToS", "$450.000");
+            ejecutiva.put("San Andrés", "$ 450.000");
+            ejecutiva.put("Medellín-San Andrés", "$800.000");
+            ejecutiva.put("San Andrés-Medellín", "$800.000");
+            
+            ventasTiquetes.put("Medellín-Bogotá", 0);
+            ventasTiquetes.put("Bogotá-Medellín", 0);
+            ventasTiquetes.put("MedellínToB", 0);
+            ventasTiquetes.put("Bogotá", 0);
+            ventasTiquetes.put("MedellínToS", 0);
+            ventasTiquetes.put("San Andrés", 0);
+            ventasTiquetes.put("Medellín-San Andrés", 0);
+            ventasTiquetes.put("San Andrés-Medellín", 0);
             
                 
         //Listeners de botones del formulario
@@ -64,23 +111,30 @@ public class BookingAir {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         datosVuelo = form_Reservas.GetDatosForm();
+                        ClaseMain = form_Reservas.GetClase();
                         printVectorDatos(datosVuelo);
                         CalcularPrecio();
+                        ObtenerDatosGrafica();
+                        Llenar_avion(vuelos);
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null,"Error:" + e);
+                        JOptionPane.showMessageDialog(null,"Error Listener:" + e + ",\nException: " + ex);
                     }
                 }
             });
                 //Boton Reservar en Ida y Vuelta
+                
             form_Reservas.b_enviarDatos2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
                         datosVuelo = form_Reservas.GetDatosForm();
+                        ClaseMain = form_Reservas.GetClase();
                         printVectorDatos(datosVuelo);
                         CalcularPrecio();
+                        ObtenerDatosGrafica();
+                        Llenar_avion(vuelos);
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(null,"Error:" + e);
+                        JOptionPane.showMessageDialog(null,"Error Listener:" + e + ",\nException: " + ex);
                     }
                 }
             });
@@ -100,7 +154,7 @@ public class BookingAir {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        VaciarCarpeta();
+                        Restart();
                         numeroTicket=0;
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(null,"Error:" + e);
@@ -125,28 +179,25 @@ public class BookingAir {
         System.out.print("\n");
     }
     
+    public static void inciar_avion(String[][] m_asientosAvion) throws Exception{
+        try {
+            for (int fila = 1; fila < m_asientosAvion.length; fila++) {
+                
+                for (int colum= 0; colum < m_asientosAvion[0].length; colum++) {
+                    m_asientosAvion[fila][colum]="L";
+                }
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ocurrio un error al vaciar el avion: " + e);
+            throw new Exception("Ocurrio un error al vaciar el avion: " + e);
+        }
+    }
+    
+    
     public static void CalcularPrecio() throws Exception {
         try {
-            economica.clear();
-            ejecutiva.clear();
-            
-            economica.put("Medellín-Bogotá", "$225.000");
-            economica.put("Bogotá-Medellín", "$225.000");
-            economica.put("Medellín", "$150.000");
-            economica.put("Bogotá", "$150.000");
-            economica.put("Medellín-San Andrés", "$380.000");
-            economica.put("San Andrés-Medellín", "$380.000");
-            economica.put("San Andrés", "$220.000");
-
-            ejecutiva.put("Medellín-Bogotá", "$400.000");
-            ejecutiva.put("Bogotá-Medellín", "$400.000");
-            ejecutiva.put("Medellín", "$290.000");
-            ejecutiva.put("Bogotá", "$290.000");
-            ejecutiva.put("Medellín-San Andrés", "$800.000");
-            ejecutiva.put("San Andrés-Medellín", "$800.000");
-            ejecutiva.put("San Andrés", "$ 450.000");
-            
-            if (datosVuelo[3].equalsIgnoreCase("Económica")) {
+            if (ClaseMain.equalsIgnoreCase("Económica")) {
                 for (String key : economica.keySet()) {
                     if (datosVuelo[2].equalsIgnoreCase(key)) {
                         valorVuelo=economica.get(key);
@@ -155,7 +206,7 @@ public class BookingAir {
                 System.out.println(valorVuelo);
                 form_Reservas.l_PrecioVuelo1.setText(valorVuelo);
   
-            } else if (datosVuelo[3].equalsIgnoreCase("Ejecutiva")) {
+            } else if (ClaseMain.equalsIgnoreCase("Ejecutiva")) {
                 for (String key : ejecutiva.keySet()) {
                     if (datosVuelo[2].equalsIgnoreCase(key)) {
                         valorVuelo=ejecutiva.get(key);
@@ -166,16 +217,238 @@ public class BookingAir {
             } 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error al Calcular el valor del vuelo: "+e);
-            throw new Exception(e);
+            throw new Exception("Ha ocurrido un error al Calcular el valor del vuelo: "+e);
+        }
+    }
+    
+    public static void ObtenerDatosGrafica() throws Exception {
+        try {
+            int valorActual=0;
+            for (String key : ventasTiquetes.keySet()) {
+                if (datosVuelo[2].equalsIgnoreCase(key)) {
+                    valorActual = ventasTiquetes.get(key);
+                    ventasTiquetes.put(key, valorActual+1);
+                    f_Reservas.datosForm.setValue(ventasTiquetes.get(key), "Vuelos", key);
+                } 
+            }
+            System.out.println(ventasTiquetes.values());
+ 
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al ObtenerDatosGrafica: "+e);
+            throw new Exception("Error al ObtenerDatosGrafica: "+e);
+        }
+    }
+    
+    
+    public static void Llenar_avion(ArrayList<String[][]> vuelos) throws Exception{
+        
+        try {
+            boolean validacion = false;
+
+            if (vuelos.isEmpty()) {
+                String[][] codigoVuelos = new String[14][4];
+                codigoVuelos[0] = datosVuelo;
+                vuelos.add(codigoVuelos);
+                inciar_avion(vuelos.get(vuelos.size() - 1));
+                asignarSillas(vuelos.get(vuelos.size() - 1));
+                System.out.println("Vuelo Nuevo-Sillas reservadas: "+contador_disponibilidad(vuelos.get(vuelos.size() - 1)) + "\n");
+                //System.out.println(vuelos.get(vuelos.size() - 1)[0][0]);
+            } else {
+                for (String elem[][] : vuelos) {
+
+                    if (elem[0][0].equals(datosVuelo[0]) && elem[0][1].equals(datosVuelo[1]) && elem[0][2].equals(datosVuelo[2]) && elem[0][3].equals(datosVuelo[3])) {
+                        //System.out.println("si");
+                        //System.out.println(elem);
+                        asignarSillas(elem);
+                        System.out.println("\t Vuelo Activo-Sillas reservadas: "+contador_disponibilidad(elem) + "\n");
+
+                        validacion = true;
+                        System.out.println(validacion);
+                    }
+                }
+
+                if (!validacion) {
+                    String[][] codigoVuelos = new String[14][4];
+                    codigoVuelos[0] = datosVuelo;
+                    //System.out.println("no");
+                    vuelos.add(codigoVuelos);
+                    //System.out.println(vuelos.get(vuelos.size() - 1)[0]);
+                    inciar_avion(vuelos.get(vuelos.size() - 1));
+                    asignarSillas(vuelos.get(vuelos.size() - 1));
+                    System.out.println("\t Vuelo Nuevo-Sillas reservadas: "+contador_disponibilidad(vuelos.get(vuelos.size() - 1)) + "\n");
+
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al Llenar avion: "+e);
+            throw new Exception("Error al Llenar avion: "+e);
+        }
+
+    }
+    
+    public static void asignarSillas(String elem[][]) throws Exception{
+        try {
+            int countEje = 0;
+            int countEco = 0;
+            boolean validacion = false;
+            numeroSilla="";
+
+            if (ClaseMain.equalsIgnoreCase("Ejecutiva")) {
+
+
+                //Llena
+                for (int fil = 1; fil < 17; fil++) {
+                    for (int col = 0; col < datosVuelo.length; col++) {
+
+                        if (elem[fil][col].equals("L") && countEje <12) {
+                            elem[fil][col] = "R";
+                            countGen++;
+
+                            String colLetra="";
+                            switch (col) {
+                            case 0: colLetra="A";
+                                break;
+                            case 1: colLetra="B";
+                                break;
+                            case 2: colLetra="C";
+                                break;
+                            case 3: colLetra="D";
+                                break;
+                            default:;
+                            }
+                            numeroSilla=""+(fil)+colLetra;
+                            System.out.println(numeroSilla); 
+                            form_Reservas.l_datoSillaV.setText(numeroSilla);
+
+                            validacion = true;
+                            break;
+                        }
+                        else {
+                            countEje++;
+
+                        }
+                    }
+                    if(validacion || countEje  == 12){
+                        break;
+                    }
+                }
+
+                //Imprime
+                MatrizAsientosAvion="";
+                for (int fila = 1; fila < elem.length; fila++) {
+                    System.out.print(fila);
+                    MatrizAsientosAvion+=fila;
+                    for (int colum = 0; colum < elem[0].length; colum++) {
+                        System.out.print("\t" + elem[fila][colum]);
+                        MatrizAsientosAvion+="    \t"+elem[fila][colum];
+                    }
+
+                    System.out.println("");
+                    MatrizAsientosAvion+="\n";
+                }
+                JOptionPane.showMessageDialog(null,"Esta es la ocupacion actual del avion: \n"+MatrizAsientosAvion);
+
+                if (countEje == 12){
+                    System.out.println("Ejecutivo Lleno");
+                    JOptionPane.showMessageDialog(null, "Ejecutivo Lleno para este vuelo\n"+MatrizAsientosAvion);
+                    form_Reservas.l_DisponibleV.setText("No Disponible");
+                }
+            } else {
+
+                //Llena
+                for (int fil = 4; fil < elem.length; fil++) {
+
+                    for (int col = 0; col < datosVuelo.length; col++) {
+
+                        if (elem[fil][col].equals("L") && countEco <40) {
+                            elem[fil][col] = "R";
+                            countGen++;
+
+                            String colLetra="";
+                            switch (col) {
+                            case 0: colLetra="A";
+                                break;
+                            case 1: colLetra="B";
+                                break;
+                            case 2: colLetra="C";
+                                break;
+                            case 3: colLetra="D";
+                                break;
+                            default:;
+                            }
+                            numeroSilla=""+(fil)+colLetra;
+                            System.out.println(numeroSilla); 
+                            form_Reservas.l_datoSillaV.setText(numeroSilla);
+
+                            validacion = true;
+                            break;
+                        }
+                        else {
+                            countEco++;
+                        }
+                    }
+                    if(validacion || countEco  == 40){
+                        break;
+                    }
+                }
+
+                //Imprime
+                MatrizAsientosAvion="";
+                for (int fila = 1; fila < elem.length; fila++) {
+                    System.out.print(fila);
+                    MatrizAsientosAvion+=fila;
+                    for (int colum = 0; colum < elem[0].length; colum++) {
+                        System.out.print("\t" + elem[fila][colum]);
+                        MatrizAsientosAvion+="    "+elem[fila][colum];
+                    }
+
+                    System.out.println("");
+                    MatrizAsientosAvion+="\n";
+                }
+                JOptionPane.showMessageDialog(null,"Esta es la ocupacion actual del avion: \n"+ MatrizAsientosAvion);
+
+                if (countEco == 40){
+                    System.out.println("Economico Lleno");
+                    JOptionPane.showMessageDialog(null, "Economico Lleno para este vuelo\n"+MatrizAsientosAvion);
+                    f_Reservas.TabsOpciones.setSelectedIndex(0);
+                }
+            }     
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al asignar sillas: "+e);
+            throw new Exception("Error al asignar sillas: "+e);
+        }
+    }
+        
+    public static int contador_disponibilidad(String elem[][]) throws Exception{
+        try {
+            int countGen = 0;
+
+            for (int fila = 1; fila < elem.length; fila++) {
+                    for (int colum = 0; colum < elem[0].length; colum++) {
+
+                        if (elem[fila][colum] == "R"){
+                            countGen++;
+                        }
+                    }
+            }
+            return countGen;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error en funcion contador_disponibilidad: "+e);
+            throw new Exception("Error en funcion contador_disponibilidad: "+e);
         }
     }
 
     //Funciones para Imprimir el tiquete
-    public static void VaciarCarpeta() throws Exception{
+    public static void Restart() throws Exception{
         try {
-            File folder = new File("E:/Santiago/Programacion/UPB/Proyectos/Final-Logica/BookingAir/src/bookingair/files/Tickets"); // Reemplaza con la ruta de tu carpeta
+                // Reemplaza con la ruta de tu carpeta
+            File folder = new File("E:/Santiago/Programacion/UPB/Proyectos/Final-Logica/BookingAir/src/bookingair/files/Tickets"); 
             File[] listOfFiles = folder.listFiles();
 
+            
+            vuelos = new ArrayList<String[][]>();
+            f_Reservas.datosForm.clear();
+            
             if (listOfFiles != null) {
                 for (File file : listOfFiles) {
                     if (file.isFile() && file.getName().endsWith(".txt")) {
@@ -191,7 +464,8 @@ public class BookingAir {
                 System.out.println("No se encontraron archivos en la carpeta.");
             }
         } catch (Exception e) {
-            throw new Exception("Error al vaciar carpeta " + e);
+            JOptionPane.showMessageDialog(null, "Error al VaciarCarpeta: "+e);
+            throw new Exception("Error al VaciarCarpeta: "+e);
         }
     }
 
@@ -204,40 +478,33 @@ public class BookingAir {
             numeroTicketS=""+numeroTicket;
             return numeroTicketS;
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Ha ocurrido un error al Imprimir el ticket: "+e);
-            throw new Exception(e);
+            JOptionPane.showMessageDialog(null, "Error al EnumerarTicket: "+e);
+            throw new Exception("Error al EnumerarTicket: "+e);
         }
     }
     
     public static void PrintTicket() throws Exception {
         try {
             String numTicket=EnumerarTicket();
+                // Reemplaza con la ruta de tu carpeta
             fileW_Vuelos = new FileWriter("E:/Santiago/Programacion/UPB/Proyectos/Final-Logica/BookingAir/src/bookingair/files/Tickets/ticket"+numTicket+".txt");
             printer_Ticket = new PrintWriter(fileW_Vuelos);
 
             //Contenido del Ticket
-            printer_Ticket.println("Ticket #"+numeroTicket +" |");
-            printer_Ticket.println("Código de vuelo "+vuelos.keySet());
-            printer_Ticket.println("Silla #"+"NUMERO DE SILLA");
+            printer_Ticket.println("Ticket #"+numeroTicket);
+            printer_Ticket.println("Código de vuelo: "+vuelos.get(vuelos.size() - 1)[0][0]+"/"+vuelos.get(vuelos.size() - 1)[0][1]+"/"+vuelos.get(vuelos.size() - 1)[0][2]+"/"+vuelos.get(vuelos.size() - 1)[0][3]);
+            printer_Ticket.println("Silla: "+numeroSilla);
             
 
-            printer_Ticket.println("Clase: "+datosVuelo[3]);
-            printer_Ticket.println("Valor: "+valorVuelo);
-            
-            /*l_datoIdaV.setText("Ida: "+datosVueloForm[0]);
-            l_datoVueltaV.setText("Vuelta: "+datosVueloForm[1]);
-            l_TrayectoV.setText("Trayecto - Solo ida");
-            l_datoTrayectoV.setText(datosVueloForm[2]+ " destino " + CB_Destino1.getSelectedItem().toString());
-            l_datoClaseV.setText(datosVueloForm[3]);
-            l_datoHoraV.setText(datosVueloForm[4]);*/
-            
-            
+            printer_Ticket.println("Clase: "+ClaseMain);
+            printer_Ticket.println("Valor: "+valorVuelo); 
 
             fileW_Vuelos.close();
             printer_Ticket.close();
             System.out.println("Se ha impreso correctamente ticket"+numTicket+".txt");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Ha ocurrido un error al Imprimir el ticket: "+e);
+            throw new Exception("Ha ocurrido un error al Imprimir el ticket: "+e);
         }
     }
     
